@@ -430,6 +430,7 @@
 
         document.querySelectorAll('.vote-button').forEach(button => {
             button.addEventListener('click', handleVote);
+            event.preventDefault();
         });
     }
 
