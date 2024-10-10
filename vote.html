@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Vote for Global Music Awards 2023</title>
+    <link rel="stylesheet" href="gma.css">
+    <script src="vote2.js"></script>
+    <script src="header.js"></script>
+    <script src="login.js"></script>
+</head>
+
+<body>
+    <header id="main-header" class="header">
+        <div class="header-container">
+            <div class="logo-container">
+                <img src="https://file.aiquickdraw.com/inpaint/1727714197_6284b4b8-4378-46f8-be3d-d83c5037def2.png"
+                    alt="Global Music Awards Logo" id="header-logo">
+            </div>
+            <nav>
+                <ul class="menu">
+                    <li><a href="home.html">Home</a></li>
+                    <li><a href="vote.html">Vote</a></li>
+                    <li><a href="performer.html">Performers</a></li>
+                    <li><a href="honorees.html">Honorees</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="vote">
+            <div id="nominees">
+                <div class="vote-controls">
+                    <button type="button" class="vote-button minus" data-id="${nominee.id}" data-sign="0">-</button>
+                    <span class="vote-count" id="vote-${nominee.id}">0</span>
+                    <button type="button" class="vote-button plus" data-id="${nominee.id}" data-sign="1">+</button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="vote-header">
+            <div id="user-info" class="user-info">
+                <span id="logged-in-email"></span>
+                <button id="logout-button" onclick="handleLogout()">Đăng xuất</button>
+            </div>
+            <h1>Vote for GMA 2023:</h1>
+            <div id="countdown-timer">
+                <div><span id="days"></span>
+                    <div class="smalltext">Days</div>
+                </div>
+                <div><span id="hours"></span>
+                    <div class="smalltext">Hours</div>
+                </div>
+                <div><span id="minutes"></span>
+                    <div class="smalltext">Minutes</div>
+                </div>
+                <div><span id="seconds"></span>
+                    <div class="smalltext">Seconds</div>
+                </div>
+            </div>
+        </div>
+        <p>&copy; 2023 Global Music Awards. All rights reserved.</p>
+    </footer>
+
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeLoginModal()">&times;</span>
+            <h2>Login</h2>
+            <form id="loginForm" onsubmit="handleLogin(event)">
+                <input type="email" name="loginEmail" placeholder="Email" required>
+                <button type="submit">Login with Email</button>
+            </form>
+            <div class="or-divider">
+                <span>OR</span>
+            </div>
+            <button id="googleSignInBtn" onclick="handleGoogleSignIn()">Sign in with Google</button>
+        </div>
+    </div>
+
+    <div id="voteSection" class="modal">
+        <div class="modal-content">
+            <h2>Vote Confirmation</h2>
+            <p>You have distributed all 10 votes for this category.</p>
+            <button type="submit" id="submitVotesBtn">Submit</button>
+            <button type="button" id="cancelVotesBtn">Cancel</button>
+        </div>
+    </div>
+</body>
+</html>
