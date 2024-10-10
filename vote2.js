@@ -5,7 +5,7 @@
             { id: 3, name: "LUNCH - Billie Eilish", image: "https://upload.wikimedia.org/wikipedia/en/a/aa/Billie_Eilish_-_Hit_Me_Hard_and_Soft.png", votes: 0 },
             { id: 4, name: "Paint The Town Red - Doja Cat", image: "https://upload.wikimedia.org/wikipedia/en/5/53/Doja_Cat_-_Paint_the_Town_Red.png", votes: 0 },
             { id: 5, name: "Houdini - Eminem", image: "https://upload.wikimedia.org/wikipedia/en/1/11/Eminem_-_Houdini.png", votes: 0 },
-            { id: 6, name: "Snooze - SZA", image: "https://upload.wikimedia.org/wikipedia/en/b/b2/SZA_-_Snooze.png", votes: 0 }
+            { id: 6, name: "Snooze - SZA", image: "https://upload.wikimedia.org/wikipedia/en/b/b2/SZA_-_Snooze.png", vote: 0 },
         ],
         "Artist of the Year": [
             { id: 1, name: "Taylor Swift", image: "https://upload.wikimedia.org/wikipedia/en/9/91/Taylor_Swift_-_Fortnight.png", votes: 0 },
@@ -212,3 +212,311 @@
             { id: 160, name: "TBeautiful Things - Benson Boone", image: "https://static.stereogum.com/uploads/2024/02/Benson-Boone-Dennis-Leupold-1709042650-scaled.jpg", votes: 0 }
         ]
     }
+
+    async function submitVote(id, sign,) {
+        const user = JSON.parse(localStorage.getItem('token')) || null;
+        if (!user) {
+            alert("You should to login first");
+            showLoginModal();
+            return;
+        }
+
+        try {
+            const response = await fetch(`http://localhost:3000/users/${user.id}`);
+            const data = await response.json();
+            let voted = data.voteCount;
+
+            if (sign == 1 && voted == 0) {
+                alert("You already use all votes");
+                showvoteSection();
+                return;
+            }
+            if (sign == 0 && voted >= 10) {
+                alert("Your voted was up-limited");
+                return;
+            }
+
+            const newVoteCount = sign == 1 ? voted - 1 : voted + 1;
+
+            await fetch(`http://localhost:3000/users/${user.id}`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ voteCount: newVoteCount })
+            });
+
+            const voteCountElement = document.getElementById(`vote-${id}`);
+            const currentVotes = parseInt(voteCountElement.textContent);
+            voteCountElement.textContent = sign == 1 ? currentVotes + 1 : currentVotes - 1;
+        }
+            catch (error) {
+                console.error('Error submitting vote:', error);
+                alert('An error occurred while submitting your vote. Please try again.');
+            }
+    }
+        
+
+    function countdowntimer() {
+        const countdownElement = document.getElementById('countdown-timer');
+        const endDate = new Date().getTime() + 7 * 24 * 60 * 60 * 1000; 
+        
+        const countdownTimer = setInterval(() => {
+            const now = new Date().getTime();
+            const distance = endDate - now;
+            
+            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+            
+            countdownElement.innerHTML = `Time remaining: ${days}d ${hours}h ${minutes}m ${seconds}s`;
+            
+            if (distance < 0) {
+                clearInterval(countdownTimer);
+                countdownElement.innerHTML = "Đã kết thúc bầu cử!";
+                displayRanking();
+            }
+        }, 1000);
+    }
+
+    function showVotedInfo(event) {
+        event.target.parentNode.nextElementSibling.classList.toggle('hidden');
+        event.target.textContent = event.target.parentNode.classList.contains('hidden') ? '▼' : '▲';
+    }
+
+    function showLoginModal() {
+        document.getElementById('loginModal').style.display = 'block';
+    }
+
+    function closeLoginModal() {
+        document.getElementById('loginModal').style.display = 'none';
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        displayCategories();
+        countdowntimer();
+
+        document.addEventListener('click', function(event) {
+            console.log('Clicked element:', event.target);
+            if (event.target.classList.contains('vote-button')) {
+                event.preventDefault();
+                event.stopPropagation();
+                const id = event.target.getAttribute('data-id');
+                const sign = parseInt(event.target.getAttribute('data-sign'));
+                submitVote(id, sign);
+                return false;
+            }
+        }, true);
+    });
+
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = e.target.loginEmail.value;
+        loginWithEmail(email)
+            .then(() => {
+                displayUserInfo();
+                closeLoginModal();
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('Đăng nhập thất bại. Vui lòng thử lại.');
+            });
+    }
+
+    function loginWithEmail(email) {
+        fetch("http://localhost:3000/users")
+            .then(res => res.json())
+            .then(data => {
+                let user = data.find(user => user.email === email);
+                if (!user) {
+                    // If user doesn't exist, create a new one
+                    user = {
+                        id: Date.now().toString(),
+                        email: email,
+                        voteCount: 10
+                    };
+                    return createNewUser(user);
+                }
+                localStorage.setItem('token', JSON.stringify(user));
+                alert('Login Successful');
+                closeLoginModal();
+            });
+    }
+
+    function displayUserInfo() {
+        const userInfo = JSON.parse(localStorage.getItem('token'));
+        const userInfoDiv = document.getElementById('user-info');
+        const loggedInEmail = document.getElementById('logged-in-email');
+        
+        if (userInfo) {
+            loggedInEmail.textContent = `Đã đăng nhập: ${userInfo.email}`;
+            userInfoDiv.style.display = 'block';
+        } else {
+            userInfoDiv.style.display = 'none';
+        }
+    }
+
+    function handleLogout() {
+        localStorage.removeItem('token');
+
+        displayUserInfo();
+        window.scrollTo({
+            top: 0,
+            behavior: 'smooth'
+        });
+    }
+
+    window.addEventListener('load', displayUserInfo);
+
+    function createNewUser(user) {
+        return fetch("http://localhost:3000/users", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(user),
+        })
+        .then(response => response.json())
+        .then(data => {
+            localStorage.setItem('token', JSON.stringify(data));
+            
+            return data;
+        });
+    }
+
+    function handleGoogleSignIn() {
+        const mockGoogleEmail = prompt("Enter your Google email (mock):");
+        if (mockGoogleEmail) {
+            loginWithEmail(mockGoogleEmail);
+        }
+    }
+
+    function displayCategories() {
+        const nomineesSection = document.getElementById('nominees');
+        nomineesSection.innerHTML = '';
+    
+        for (const category in nominee) {
+            const categoryHtml = `
+                <div class="category-container">
+                    <div class="category-header">
+                        <h3>${category}</h3>
+                        <button class="toggle-button">▼</button>
+                    </div>
+                    <div class="nominee-grid hidden">
+                        ${nominee[category].map(nominee => `
+                            <div class="nominee-card" data-aos="fade-up">
+                                <div class="nominee-image" style="background-image: url('${nominee.image}')"></div>
+                                <div class="nominee-info">
+                                    <h4>${nominee.name}</h4>
+                                    <div class="vote-controls">
+                                        <button type="button" class="vote-button minus" data-id="${nominee.id}" data-sign="0">-</button>
+                                        <span class="vote-count" id="vote-${nominee.id}">0</span>
+                                        <button type="button" class="vote-button plus" data-id="${nominee.id}" data-sign="1">+</button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+            nomineesSection.innerHTML += categoryHtml;
+        }
+        addEventListeners();
+    }    
+
+    function addEventListeners() {
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', showVotedInfo);
+        });
+
+        document.querySelectorAll('.vote-button').forEach(button => {
+            button.addEventListener('click', handleVote);
+        });
+    }
+
+    function handleVote(event) {
+        event.preventDefault(); // Ngăn chặn hành vi mặc định
+        event.stopPropagation(); // Ngăn chặn sự kiện lan truyền
+        const id = this.getAttribute('data-id');
+        const sign = parseInt(this.getAttribute('data-sign'));
+        submitVote(id, sign);
+        return false; // Ngăn chặn bất kỳ hành động mặc định nào khác
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const voteSection = document.getElementById('voteSection');
+        const submitVotesBtn = document.getElementById('submitVotesBtn');
+        const cancelVotesBtn = document.getElementById('cancelVotesBtn');
+        const categoryVotes = {};
+    
+        document.body.addEventListener('click', function(event) {
+            if (event.target.classList.contains('vote-button')) {
+                event.preventDefault();
+                const button = event.target;
+                const categoryContainer = button.closest('.category-container');
+                const categoryId = categoryContainer.dataset.categoryId;
+                const nomineeId = button.dataset.id;
+                const sign = parseInt(button.dataset.sign);
+                
+                if (!categoryVotes[categoryId]) {
+                    categoryVotes[categoryId] = {};
+                }
+                
+                if (!categoryVotes[categoryId][nomineeId]) {
+                    categoryVotes[categoryId][nomineeId] = 0;
+                }
+    
+                const currentVotes = categoryVotes[categoryId][nomineeId];
+                const totalCategoryVotes = Object.values(categoryVotes[categoryId]).reduce((a, b) => a + b, 0);
+    
+                if (sign === 1 && totalCategoryVotes < 10) {
+                    categoryVotes[categoryId][nomineeId]++;
+                    updateVoteDisplay(nomineeId, categoryVotes[categoryId][nomineeId]);
+                    
+                    if (totalCategoryVotes + 1 === 10) {
+                        showVoteConfirmation(categoryId);
+                    }
+                } else if (sign === 0 && currentVotes > 0) {
+                    categoryVotes[categoryId][nomineeId]--;
+                    updateVoteDisplay(nomineeId, categoryVotes[categoryId][nomineeId]);
+                }
+            }
+        });
+    
+        function updateVoteDisplay(nomineeId, votes) {
+            const voteCountElement = document.getElementById(`vote-${nomineeId}`);
+            if (voteCountElement) {
+                voteCountElement.textContent = votes;
+            }
+        }
+    
+        function showVoteConfirmation(categoryId) {
+            voteSection.style.display = 'block';
+            submitVotesBtn.onclick = function() {
+                submitCategoryVotes(categoryId);
+                voteSection.style.display = 'none';
+            };
+            cancelVotesBtn.onclick = function() {
+                voteSection.style.display = 'none';
+            };
+        }
+    
+        function submitCategoryVotes(categoryId) {
+            const votes = categoryVotes[categoryId];
+            fetch('vote.php', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ categoryId, votes }),
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                // Cập nhật UI nếu cần
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+    });
+    
