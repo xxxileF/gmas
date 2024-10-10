@@ -1,0 +1,126 @@
+{
+  "users": [
+    {
+      "id": "1",
+      "email": "user1@example.com",
+      "voteCount": 10
+    },
+    {
+      "id": "2",
+      "email": "user2@example.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728484069150",
+      "email": "a@gmail.com",
+      "voteCount": 0
+    },
+    {
+      "id": "1728485346077",
+      "email": "12312@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728485404831",
+      "email": "awww@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728485803915",
+      "email": "assd@gmail.com",
+      "voteCount": 2
+    },
+    {
+      "id": "1728485857161",
+      "email": "asd@gmail.com",
+      "voteCount": 9
+    },
+    {
+      "id": "1728486937882",
+      "email": "b@gmail.com",
+      "voteCount": 9
+    },
+    {
+      "id": "1728488649282",
+      "email": "1232@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728489486892",
+      "email": "email1@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728490136351",
+      "email": "123312@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728552105193",
+      "email": "awda@gmail.co",
+      "voteCount": 10
+    },
+    {
+      "id": "1728555057144",
+      "email": "a@gmail",
+      "voteCount": 10
+    },
+    {
+      "id": "1728555227652",
+      "email": "15@gmail.com",
+      "voteCount": 10
+    },
+    {
+      "id": "1728555634893",
+      "email": "16@gmail.com",
+      "voteCount": 10
+    }
+  ],
+  "votes": [
+    {
+      "id": "1",
+      "userId": "1",
+      "categoryId": "Video of the Year",
+      "nomineeId": 1,
+      "count": 1
+    }
+  ],
+  "categories": [
+    {
+      "id": "Video of the Year",
+      "name": "Video of the Year",
+      "nominees": [
+        {
+          "id": 1,
+          "name": "Fortnight - Taylor Swift feat. Post Malone",
+          "image": "https://upload.wikimedia.org/wikipedia/en/9/91/Taylor_Swift_-_Fortnight.png",
+          "votes": 0
+        },
+        {
+          "id": 2,
+          "name": "we can't be friends (wait for your love) - Ariana Grande",
+          "image": "https://upload.wikimedia.org/wikipedia/en/6/6d/WeCantBeFriendsArianaGrande.png",
+          "votes": 0
+        }
+      ]
+    },
+    {
+      "id": "Artist of the Year",
+      "name": "Artist of the Year",
+      "nominees": [
+        {
+          "id": 7,
+          "name": "Taylor Swift",
+          "image": "https://upload.wikimedia.org/wikipedia/en/9/91/Taylor_Swift_-_Fortnight.png",
+          "votes": 0
+        },
+        {
+          "id": 8,
+          "name": "Ariana Grande",
+          "image": "https://upload.wikimedia.org/wikipedia/commons/6/69/Ariana_Grande_at_the_Met_Gala_2024_%281%29.jpg",
+          "votes": 0
+        }
+      ]
+    }
+  ]
+}
