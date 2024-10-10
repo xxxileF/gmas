@@ -190,7 +190,7 @@
             { id: 140, name: "Imagine Dragons", image: "https://upload.wikimedia.org/wikipedia/commons/a/a2/Imagine_Dragons_-_Uncasville_CT_-_November_2017_-_2.jpg", votes: 0 },
             { id: 141, name: "NCT DREAM", image: "https://t2.genius.com/unsafe/191x191/https%3A%2F%2Fimages.genius.com%2Fb0040baa3297641864c7e5ce411ea1d4.1000x1000x1.jpg", votes: 0 },
             { id: 142, name: "NewJeans", image: "https://t2.genius.com/unsafe/191x191/https%3A%2F%2Fimages.genius.com%2Ffcd2e5a2ade130083470b2143deafce4.1000x1000x1.png", votes: 0 },
-            { id: 143, name: "Stray Kids", image: "https://scontent.fsgn2-6.fna.fbcdn.net/v/t39.30808-6/448527235_1026858952142323_5997900392675557180_n.jpg?_nc_cat=1&ccb=1-7&_nc_sid=6ee11a&_nc_ohc=h7ix3LrWZB0Q7kNvgFcawII&_nc_ht=scontent.fsgn2-6.fna&_nc_gid=Aq__6iAwzC64OnP_-QNJ46m&oh=00_AYCw6KqqUumzbezYu455ro6JElPiHD0K7KG4cxGUf0J0Cg&oe=67034A27", votes: 0 },
+            { id: 143, name: "Stray Kids", image: "https://0.soompi.io/wp-content/uploads/2023/04/16082130/Stray-Kids-4.jpeg", votes: 0 },
             { id: 144, name: "Twenty One Pilots", image: "https://upload.wikimedia.org/wikipedia/commons/e/ea/Twenty_One_Pilots_-_Southside_Festival_2022_-_IMG_6029_-_1_%28cropped%29.jpg", votes: 0 }
         ],
         "Song of Summer": [
@@ -294,33 +294,7 @@
     document.addEventListener('DOMContentLoaded', function () {
         displayCategories();
         countdowntimer();
-
-        document.addEventListener('click', function(event) {
-            console.log('Clicked element:', event.target);
-            if (event.target.classList.contains('vote-button')) {
-                event.preventDefault();
-                event.stopPropagation();
-                const id = event.target.getAttribute('data-id');
-                const sign = parseInt(event.target.getAttribute('data-sign'));
-                submitVote(id, sign);
-                return false;
-            }
-        }, true);
     });
-
-    function handleLogin(e) {
-        e.preventDefault();
-        const email = e.target.loginEmail.value;
-        loginWithEmail(email)
-            .then(() => {
-                displayUserInfo();
-                closeLoginModal();
-            })
-            .catch(error => {
-                console.error('Login error:', error);
-                alert('Đăng nhập thất bại. Vui lòng thử lại.');
-            });
-    }
 
     function loginWithEmail(email) {
         fetch("http://localhost:3000/users")
@@ -328,7 +302,6 @@
             .then(data => {
                 let user = data.find(user => user.email === email);
                 if (!user) {
-                    // If user doesn't exist, create a new one
                     user = {
                         id: Date.now().toString(),
                         email: email,
@@ -365,6 +338,20 @@
         });
     }
 
+    function handleLogin(e) {
+        e.preventDefault();
+        const email = e.target.loginEmail.value;
+        loginWithEmail(email)
+            .then(() => {
+                displayUserInfo();
+                closeLoginModal();
+            })
+            .catch(error => {
+                console.error('Login error:', error);
+                alert('Đăng nhập thất bại. Vui lòng thử lại.');
+            });
+    }
+
     window.addEventListener('load', displayUserInfo);
 
     function createNewUser(user) {
@@ -383,11 +370,32 @@
         });
     }
 
+    window.addEventListener('load', displayUserInfo);
+
     function handleGoogleSignIn() {
         const mockGoogleEmail = prompt("Enter your Google email (mock):");
         if (mockGoogleEmail) {
             loginWithEmail(mockGoogleEmail);
         }
+    }
+
+    function addEventListeners() {
+        document.querySelectorAll('.toggle-button').forEach(button => {
+            button.addEventListener('click', showVotedInfo);
+        });
+
+        document.querySelectorAll('.vote-button').forEach(button => {
+            button.addEventListener('click', handleVote);
+        });
+    }
+
+    function handleVote(event) {
+        event.preventDefault();
+        event.stopPropagation();
+        const id = this.getAttribute('data-id');
+        const sign = parseInt(this.getAttribute('data-sign'));
+        submitVote(id, sign);
+        return false;
     }
 
     function displayCategories() {
@@ -421,103 +429,4 @@
             nomineesSection.innerHTML += categoryHtml;
         }
         addEventListeners();
-    }    
-
-    function addEventListeners() {
-        document.querySelectorAll('.toggle-button').forEach(button => {
-            button.addEventListener('click', showVotedInfo);
-        });
-
-        document.querySelectorAll('.vote-button').forEach(button => {
-            button.addEventListener('click', handleVote);
-            event.preventDefault();
-        });
     }
-
-    function handleVote(event) {
-        event.preventDefault(); // Ngăn chặn hành vi mặc định
-        event.stopPropagation(); // Ngăn chặn sự kiện lan truyền
-        const id = this.getAttribute('data-id');
-        const sign = parseInt(this.getAttribute('data-sign'));
-        submitVote(id, sign);
-        return false; // Ngăn chặn bất kỳ hành động mặc định nào khác
-    }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const voteSection = document.getElementById('voteSection');
-        const submitVotesBtn = document.getElementById('submitVotesBtn');
-        const cancelVotesBtn = document.getElementById('cancelVotesBtn');
-        const categoryVotes = {};
-    
-        document.body.addEventListener('click', function(event) {
-            if (event.target.classList.contains('vote-button')) {
-                event.preventDefault();
-                const button = event.target;
-                const categoryContainer = button.closest('.category-container');
-                const categoryId = categoryContainer.dataset.categoryId;
-                const nomineeId = button.dataset.id;
-                const sign = parseInt(button.dataset.sign);
-                
-                if (!categoryVotes[categoryId]) {
-                    categoryVotes[categoryId] = {};
-                }
-                
-                if (!categoryVotes[categoryId][nomineeId]) {
-                    categoryVotes[categoryId][nomineeId] = 0;
-                }
-    
-                const currentVotes = categoryVotes[categoryId][nomineeId];
-                const totalCategoryVotes = Object.values(categoryVotes[categoryId]).reduce((a, b) => a + b, 0);
-    
-                if (sign === 1 && totalCategoryVotes < 10) {
-                    categoryVotes[categoryId][nomineeId]++;
-                    updateVoteDisplay(nomineeId, categoryVotes[categoryId][nomineeId]);
-                    
-                    if (totalCategoryVotes + 1 === 10) {
-                        showVoteConfirmation(categoryId);
-                    }
-                } else if (sign === 0 && currentVotes > 0) {
-                    categoryVotes[categoryId][nomineeId]--;
-                    updateVoteDisplay(nomineeId, categoryVotes[categoryId][nomineeId]);
-                }
-            }
-        });
-    
-        function updateVoteDisplay(nomineeId, votes) {
-            const voteCountElement = document.getElementById(`vote-${nomineeId}`);
-            if (voteCountElement) {
-                voteCountElement.textContent = votes;
-            }
-        }
-    
-        function showVoteConfirmation(categoryId) {
-            voteSection.style.display = 'block';
-            submitVotesBtn.onclick = function() {
-                submitCategoryVotes(categoryId);
-                voteSection.style.display = 'none';
-            };
-            cancelVotesBtn.onclick = function() {
-                voteSection.style.display = 'none';
-            };
-        }
-    
-        function submitCategoryVotes(categoryId) {
-            const votes = categoryVotes[categoryId];
-            fetch('vote.php', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ categoryId, votes }),
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('Success:', data);
-                // Cập nhật UI nếu cần
-            })
-            .catch((error) => {
-                console.error('Error:', error);
-            });
-        }
-    });
-    
